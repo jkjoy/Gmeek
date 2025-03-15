@@ -78,21 +78,24 @@
 
 {% block script %}
 <script>
-document.getElementById("pathHome").setAttribute("d",IconList["home"]);
-{% if blogBase['showPostSource']==1 %}document.getElementById("pathIssue").setAttribute("d",IconList["github"]);{% endif %}
-{% if blogBase['commentNum']>0 -%}
-    cmButton=document.getElementById("cmButton");
-    span=document.createElement("span");
-    span.setAttribute("class","Counter");
-    span.innerHTML="{{ blogBase['commentNum'] }}";
+document.getElementById("pathHome").setAttribute("d", IconList["home"]);
+{% if blogBase['showPostSource'] == 1 %}
+document.getElementById("pathIssue").setAttribute("d", IconList["github"]);
+{%- endif %}
+
+{% if blogBase['commentNum'] > 0 %}
+    cmButton = document.getElementById("cmButton");
+    span = document.createElement("span");
+    span.setAttribute("class", "Counter");
+    span.innerHTML = "{{ blogBase['commentNum'] }}";
     cmButton.appendChild(span);
 {%- endif %}
 
-{% if blogBase['needComment']==1 %}
-function openComments(){
-    cm=document.getElementById("comments");
+{% if blogBase['needComment'] == 1 %}
+function loadComments() {
+    cm = document.getElementById("comments");
 
-    script=document.createElement("script");
+    script = document.createElement("script");
     script.src = "https://giscus.app/client.js";
     script.setAttribute("data-repo", "{{ blogBase['repoName'] }}");
     script.setAttribute("data-repo-id", "R_kgDONLuBqA");
@@ -107,32 +110,37 @@ function openComments(){
     script.setAttribute("data-lang", "zh-CN");
     script.setAttribute("crossorigin", "anonymous");
     script.async = true;
- 
-    {% if blogBase['themeMode']=='manual' %}
-    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
-    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
-    else{script.setAttribute("theme","preferred-color-scheme");}
-    {% else %}
-    script.setAttribute("theme","{{ blogBase['nightTheme'] }}");
-    {% endif %}
-    script.setAttribute("crossorigin","anonymous");
-    script.setAttribute("async","");
+
+    {% if blogBase['themeMode'] == 'manual' %}
+    if (localStorage.getItem("meek_theme") == "dark") {
+        script.setAttribute("data-theme", "dark-blue");
+    } else if (localStorage.getItem("meek_theme") == "light") {
+        script.setAttribute("data-theme", "github-light");
+    } else {
+        script.setAttribute("data-theme", "preferred-color-scheme");
+    }
+    {%- else %}
+    script.setAttribute("data-theme", "{{ blogBase['nightTheme'] }}");
+    {%- endif %}
+    script.setAttribute("crossorigin", "anonymous");
+    script.setAttribute("async", "");
     cm.appendChild(script);
 
-    int=self.setInterval("iFrameLoading()",200);
+    int = self.setInterval("checkGiscusLoading()", 200);
 }
 
-function iFrameLoading(){
-    var utterances=document.getElementsByClassName('utterances');
-    if(utterances.length==1){
-        if(utterances[0].style.height!=""){
-            utterancesLoad=1;
-            int=window.clearInterval(int);
-            document.getElementById("cmButton").style.display="none";
-            console.log("utterances Load OK");
+function checkGiscusLoading() {
+    var giscusFrame = document.querySelector('iframe.giscus-frame');
+    if (giscusFrame) {
+        if (giscusFrame.contentWindow.document.readyState === 'complete') {
+            int = window.clearInterval(int);
+            console.log("Giscus Load OK");
         }
     }
 }
+
+// 直接加载评论
+loadComments();
 {%- endif %}
 
 {% if blogBase['highlight']!=0 -%}
