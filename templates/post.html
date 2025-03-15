@@ -83,14 +83,6 @@ document.getElementById("pathHome").setAttribute("d", IconList["home"]);
 document.getElementById("pathIssue").setAttribute("d", IconList["github"]);
 {%- endif %}
 
-{% if blogBase['commentNum'] > 0 %}
-    cmButton = document.getElementById("cmButton");
-    span = document.createElement("span");
-    span.setAttribute("class", "Counter");
-    span.innerHTML = "{{ blogBase['commentNum'] }}";
-    cmButton.appendChild(span);
-{%- endif %}
-
 {% if blogBase['needComment'] == 1 %}
 function loadComments() {
     cm = document.getElementById("comments");
@@ -119,7 +111,7 @@ function loadComments() {
     } else {
         script.setAttribute("data-theme", "preferred-color-scheme");
     }
-    {%- else %}
+    {% else %}
     script.setAttribute("data-theme", "{{ blogBase['nightTheme'] }}");
     {%- endif %}
     script.setAttribute("crossorigin", "anonymous");
